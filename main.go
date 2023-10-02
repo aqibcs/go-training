@@ -16,7 +16,7 @@ func main() {
 	filePath := os.Args[1]
 	file, err := os.Open(filePath)
 	if err != nil {
-		fmt.Println("Error opening file:", err)
+		fmt.Println("Error opening file: ", err)
 		return
 	}
 

@@ -2,10 +2,14 @@
 
 This Go program converts data from a CSV (Comma-Separated Values) file to JSON format.
 
-## Usage
+## Prerequisite
 
-Make sure you have Go installed. You can run the program using the following command:
+- Golang
+
+## Run
+
+You can run the program using the following command:
 
 ```bash
-go run main.go data.csv
+go run main.go <path/to/your/csvFile>
 ```
