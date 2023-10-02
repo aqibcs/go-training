@@ -1,2 +1,15 @@
-# go-training
-Write a program in golang which parses the file path passed in command-line argument as csv and prints its data in json format
+# CSV to JSON Converter
+
+This Go program converts data from a CSV (Comma-Separated Values) file to JSON format.
+
+## Prerequisite
+
+- Golang
+
+## Run
+
+You can run the program using the following command:
+
+```bash
+go run main.go <path/to/your/csvFile>
+```
