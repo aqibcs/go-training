@@ -6,10 +6,26 @@ This Go program converts data from a CSV (Comma-Separated Values) file to JSON f
 
 - Golang
 
-## Run
+## Build
 
-You can run the program using the following command:
+To build this project
 
 ```bash
-go run main.go <path/to/your/csvFile>
+./scripts/build.sh
+```
+
+## Run
+
+You can run the project using the following command:
+
+```bash
+./scripts/run.sh
+```
+
+## Build and Run
+
+To build and run the project use the following command:
+
+```bash
+./scripts/run.sh -b
 ```
