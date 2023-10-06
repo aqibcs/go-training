@@ -1,8 +1,7 @@
 #!/bin/bash
 
-ProjectName=csv-json-conv
-OutputDirectory=./bin
-SourceFile=main.go
-CsvFile=./csv/data.csv
-
-Binary=$OutputDirectory/$ProjectName
+PROJECT_NAME=csv-json-conv
+OUTPUT_DIRECTORY=./bin
+SOURCE_FILE=main.go
+CSV_FILE=./csv/data.csv
+BINARY=$OUTPUT_DIRECTORY/$PROJECT_NAME

@@ -3,7 +3,7 @@
 source ./scripts/env.sh
 
 
-Build=false
+build=false
 
 # Parse command line arguments
 while getopts "b" opt; do
@@ -17,5 +17,5 @@ done
 if [ "$Build" = true ]; then
    ./scripts/build.sh
 else
-    $Binary $CsvFile
+    $BINARY $CSV_FILE
 fi

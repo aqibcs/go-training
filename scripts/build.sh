@@ -3,10 +3,10 @@
 source ./scripts/env.sh
 
 # Check if the output directory exists, create it if not
-if [ ! -d "$OutputDirectory" ]; then
-    mkdir -p "$OutputDirectory"
+if [ ! -d "$OUTPUT_DIRECTORY" ]; then
+    mkdir -p "$OUTPUT_DIRECTORY"
 fi
 
-go build -o $Binary $SourceFile
+go build -o $BINARY $SOURCE_FILE
 
-echo "CSV to JSON conversion completed successfully. Output file: $Binary"
+echo "Build project successfully. Binary file: $Binary"
