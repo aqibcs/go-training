@@ -2,7 +2,6 @@
 
 source ./scripts/env.sh
 
-
 build=false
 
 # Parse command line arguments
