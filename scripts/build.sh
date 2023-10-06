@@ -9,4 +9,4 @@ fi
 
 go build -o $BINARY $SOURCE_FILE
 
-echo "Build project successfully. Binary file: $Binary"
+echo "Build project successfully. Binary file: $BINARY"

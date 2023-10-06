@@ -15,6 +15,6 @@ done
 
 if [ "$Build" = true ]; then
    ./scripts/build.sh
-else
-    $BINARY $CSV_FILE
 fi
+
+$BINARY $CSV_FILE
