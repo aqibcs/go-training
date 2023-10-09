@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/gorilla/mux"
-	"net/http"
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
+	"net/http"
 	"os"
 )
 
@@ -53,15 +53,15 @@ func main() {
 	fmt.Println(string(jsonOutput))
 
 	r := mux.NewRouter()
-    r.HandleFunc("/hello/{name}", HelloHandler).Methods("GET")
-    http.Handle("/", r)
-    http.ListenAndServe(":8080", r)
+	r.HandleFunc("/hello/{name}", HelloHandler).Methods("GET")
+	http.Handle("/", r)
+	http.ListenAndServe(":8080", r)
 
 }
 
 func HelloHandler(w http.ResponseWriter, r *http.Request) {
-    vars := mux.Vars(r)
-    name := vars["name"]
-    w.WriteHeader(http.StatusOK)
-    w.Write([]byte("Hello, " + name + "!"))
+	vars := mux.Vars(r)
+	name := vars["name"]
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Hello, " + name + "!"))
 }
