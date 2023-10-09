@@ -4,9 +4,11 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
+	"go-training/handlers"
 	"net/http"
 	"os"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -53,15 +55,8 @@ func main() {
 	fmt.Println(string(jsonOutput))
 
 	r := mux.NewRouter()
-	r.HandleFunc("/hello/{name}", HelloHandler).Methods("GET")
+	r.HandleFunc("/hello/{name}", handlers.HelloHandler).Methods("GET")
 	http.Handle("/", r)
 	http.ListenAndServe(":8080", r)
 
-}
-
-func HelloHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	name := vars["name"]
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Hello, " + name + "!"))
 }
