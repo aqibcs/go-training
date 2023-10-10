@@ -4,10 +4,21 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"go-training/handlers"
+	"net/http"
 	"os"
+
+	"github.com/gorilla/mux"
 )
 
 func main() {
+	r := mux.NewRouter()
+	r.HandleFunc("/csv-json-conv/{path}", handlers.CSVtoJSONHandler).Methods("GET")
+	http.Handle("/", r)
+	http.ListenAndServe(":8080", r)
+}
+
+func CSVToJsonConvertor() {
 	if len(os.Args) < 2 {
 		fmt.Println("Usage: go run main.go <csv-file-path>")
 		return
