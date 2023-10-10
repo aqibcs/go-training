@@ -18,7 +18,7 @@ func main() {
 	http.ListenAndServe(":8080", r)
 }
 
-func CSV() {
+func CSVToJsonConvertor() {
 	if len(os.Args) < 2 {
 		fmt.Println("Usage: go run main.go <csv-file-path>")
 		return
