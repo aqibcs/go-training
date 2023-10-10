@@ -2,7 +2,7 @@
 
 source ./scripts/env.sh
 
-build=false
+Build=false
 
 # Parse command line arguments
 while getopts "b" opt; do
