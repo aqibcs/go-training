@@ -24,12 +24,22 @@ func CSVtoJSONHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	jsonData, err := json.Marshal(records)
+	var jsonData []map[string]string
+	headers := records[0] // Extract headers from the first row
+	for _, row := range records[1:] {
+		data := make(map[string]string)
+		for i, col := range row {
+			data[headers[i]] = col
+		}
+		jsonData = append(jsonData, data)
+	}
+
+	jsonOutput, err := json.Marshal(jsonData)
 	if err != nil {
 		http.Error(w, "Error converting to JSON: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonData)
+	w.Write(jsonOutput)
 }
