@@ -3,14 +3,12 @@ package main
 import (
 	"go-training/handlers"
 	"net/http"
-
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi"
 )
 
 func main() {
-	r := mux.NewRouter()
-	r.HandleFunc("/upload", handlers.UploadFileHandler).Methods("POST")
-	r.HandleFunc("/hello/{name}", handlers.HelloHandler).Methods("GET")
-	http.Handle("/", r)
+	r := chi.NewRouter()
+    r.Get("/upload", handlers.UploadFileHandler)
+	r.Post("/hello", handlers.HelloHandler)
 	http.ListenAndServe(":8080", r)
 }

@@ -8,12 +8,6 @@ import (
 )
 
 func UploadFileHandler(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseMultipartForm(10 << 20) // Max size: 10 MB
-	if err != nil {
-		http.Error(w, "Error parsing form", http.StatusInternalServerError)
-		return
-	}
-
 	file, _, err := r.FormFile("file") // "file" is the key for the uploaded file
 	if err != nil {
 		http.Error(w, "Error retrieving the file", http.StatusInternalServerError)
