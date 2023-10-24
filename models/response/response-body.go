@@ -1,8 +1,5 @@
-package handlers
+package response
 
-type RequestBody struct {
-	Name string `json:"name"`
-}
 type ResponseBody struct {
 	Code       int   `json:"code"`
 	Message   string `json:"message"`

@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"go-training/models/request"
+	"go-training/models/response"
 	"encoding/json"
 	"net/http"
 	"time"
@@ -8,14 +10,14 @@ import (
 
 
 func HelloHandler(w http.ResponseWriter, r *http.Request) {
-	var RequestBody RequestBody
+	var RequestBody request.RequestBody
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&RequestBody)
 	if err != nil {
 		http.Error(w, "Inavlid requestbody", http.StatusBadRequest)
 	}
 
-	response := ResponseBody {
+	response := response.ResponseBody {
 		Code: 200,
 		Message: "Welcome " + RequestBody.Name + "!",
 		Timestamp: time.Now().UTC().Format(time.RFC3339),
