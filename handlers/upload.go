@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"encoding/json"
 	"encoding/csv"
-	"net/http"
+	"encoding/json"
 	"io"
+	"net/http"
 )
 
 func UploadFileHandler(w http.ResponseWriter, r *http.Request) {
