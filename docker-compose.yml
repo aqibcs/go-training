@@ -12,6 +12,6 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./db/schema.sql:/docker-entrypoint-initdb.d/01_init.sql
-      - ./db/data.sql:/docker-entrypoint-initdb.d/02_data.sql
+      - ./schema/init.sql:/docker-entrypoint-initdb.d/01_init.sql
+      - ./schema/data.sql:/docker-entrypoint-initdb.d/02_data.sql
       
