@@ -21,8 +21,6 @@ func GetDB() *gorm.DB {
 	return conn
 }
 
-// var DB *gorm.DB
-
 func Init() {
 	// Load environment variables from .env file
 	err := godotenv.Load()
