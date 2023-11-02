@@ -15,7 +15,7 @@ type Object struct {
 
 func GetAllObjects() ([]Object, error) {
 	var objects []Object
-	if err := db.DB.Find(&objects).Error; err != nil {
+	if err := db.GetDB().Find(&objects).Error; err != nil {
 		return nil, err
 	}
 	return objects, nil
@@ -23,14 +23,14 @@ func GetAllObjects() ([]Object, error) {
 
 func GetObjectByID(id uint) (Object, error) {
 	var object Object
-	if err := db.DB.First(&object, id).Error; err != nil {
+	if err := db.GetDB().First(&object, id).Error; err != nil {
 		return Object{}, err
 	}
 	return object, nil
 }
 
 func CreateObject(object *Object) error {
-	if err := db.DB.Create(object).Error; err != nil {
+	if err := db.GetDB().Create(object).Error; err != nil {
 		return err
 	}
 	return nil
@@ -38,7 +38,7 @@ func CreateObject(object *Object) error {
 
 func UpdateObject(id uint, updatedObject *Object) (Object, error) {
 	var object Object
-	if err := db.DB.First(&object, id).Error; err != nil {
+	if err := db.GetDB().First(&object, id).Error; err != nil {
 		return Object{}, err
 	}
 
@@ -47,7 +47,7 @@ func UpdateObject(id uint, updatedObject *Object) (Object, error) {
 	object.Age = updatedObject.Age
 	object.City = updatedObject.City
 
-	if err := db.DB.Save(&object).Error; err != nil {
+	if err := db.GetDB().Save(&object).Error; err != nil {
 		return Object{}, err
 	}
 
@@ -55,7 +55,7 @@ func UpdateObject(id uint, updatedObject *Object) (Object, error) {
 }
 
 func DeleteObject(id uint) error {
-	if err := db.DB.Delete(&Object{}, id).Error; err != nil {
+	if err := db.GetDB().Delete(&Object{}, id).Error; err != nil {
 		return err
 	}
 	return nil

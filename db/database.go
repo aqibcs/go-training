@@ -5,11 +5,23 @@ import (
 	"gorm.io/gorm"
 	"log"
 	"os"
+	"sync"
 
 	"github.com/joho/godotenv"
 )
 
-var DB *gorm.DB
+var (
+	conn    *gorm.DB
+	dbMutex sync.Mutex
+)
+
+func GetDB() *gorm.DB {
+	dbMutex.Lock()
+	defer dbMutex.Unlock()
+	return conn
+}
+
+// var DB *gorm.DB
 
 func Init() {
 	// Load environment variables from .env file
@@ -29,8 +41,20 @@ func Init() {
 	dsn := "user=" + username + " password=" + password + " dbname=" + databaseName + " host=" + host + " port=" + port
 
 	var errDB error
-	DB, errDB = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	conn, errDB = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if errDB != nil {
 		log.Fatal("Failed to connect to the database")
 	}
+}
+
+func PingDB() error {
+	postgresDB, err := conn.DB()
+	if err != nil {
+		return err
+	}
+	err = postgresDB.Ping()
+	if err != nil {
+		return err
+	}
+	return nil
 }

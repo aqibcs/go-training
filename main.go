@@ -25,7 +25,8 @@ func main() {
 	r.Get("/upload", handlers.UploadFileHandler)
 	r.Post("/hello", handlers.HelloHandler)
 
-	db.DB.AutoMigrate(&models.Object{})
+	dbConn := db.GetDB()
+	dbConn.AutoMigrate(&models.Object{})
 
 	// Start the HTTP server on port 8080
 	http.ListenAndServe(":8080", r)
