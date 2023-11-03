@@ -1,23 +1,19 @@
 package db
 
 import (
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 	"log"
 	"os"
-	"sync"
 
 	"github.com/joho/godotenv"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 var (
-	conn    *gorm.DB
-	dbMutex sync.Mutex
+	conn *gorm.DB
 )
 
 func GetDB() *gorm.DB {
-	dbMutex.Lock()
-	defer dbMutex.Unlock()
 	return conn
 }
 
@@ -50,9 +46,6 @@ func PingDB() error {
 	if err != nil {
 		return err
 	}
-	err = postgresDB.Ping()
-	if err != nil {
-		return err
-	}
-	return nil
+
+	return postgresDB.Ping()
 }
