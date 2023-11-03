@@ -1,45 +1,37 @@
-package models
+package crud
 
 import (
 	"go-training/db"
-
-	"gorm.io/gorm"
+	"go-training/db/models/object"
 )
 
-type Object struct {
-	gorm.Model
-	Name string
-	Age  int
-	City string
-}
-
-func GetAllObjects() ([]Object, error) {
-	var objects []Object
+func GetAllObjects() ([]models.Object, error) {
+	var objects []models.Object
 	if err := db.GetDB().Find(&objects).Error; err != nil {
 		return nil, err
 	}
 	return objects, nil
 }
 
-func GetObjectByID(id uint) (Object, error) {
-	var object Object
+func GetObjectByID(id uint) (models.Object, error) {
+	var object models.Object
 	if err := db.GetDB().First(&object, id).Error; err != nil {
-		return Object{}, err
+		return models.Object{}, err
 	}
 	return object, nil
 }
 
-func CreateObject(object *Object) error {
+func CreateObject(object *models.Object) error {
 	if err := db.GetDB().Create(object).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func UpdateObject(id uint, updatedObject *Object) (Object, error) {
-	var object Object
+func UpdateObject(id uint, updatedObject *models.Object) (models.Object, error) {
+	var object models.Object
 	if err := db.GetDB().First(&object, id).Error; err != nil {
-		return Object{}, err
+		return models.Object{}, err
 	}
 
 	// Update object fields
@@ -48,14 +40,14 @@ func UpdateObject(id uint, updatedObject *Object) (Object, error) {
 	object.City = updatedObject.City
 
 	if err := db.GetDB().Save(&object).Error; err != nil {
-		return Object{}, err
+		return models.Object{}, err
 	}
 
 	return object, nil
 }
 
 func DeleteObject(id uint) error {
-	if err := db.GetDB().Delete(&Object{}, id).Error; err != nil {
+	if err := db.GetDB().Delete(&models.Object{}, id).Error; err != nil {
 		return err
 	}
 	return nil

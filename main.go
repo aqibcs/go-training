@@ -5,8 +5,8 @@ import (
 
 	"github.com/go-chi/chi"
 	"go-training/db"
+	"go-training/db/models/object"
 	"go-training/handlers"
-	"go-training/models/object"
 )
 
 func main() {

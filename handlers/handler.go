@@ -6,11 +6,12 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi"
-	"go-training/models/object"
+	"go-training/db/models/crud"
+	"go-training/db/models/object"
 )
 
 func GetAllObjects(w http.ResponseWriter, r *http.Request) {
-	objects, err := models.GetAllObjects()
+	objects, err := crud.GetAllObjects()
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
@@ -36,7 +37,7 @@ func GetObjectByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	obj, err := models.GetObjectByID(uint(objectID))
+	obj, err := crud.GetObjectByID(uint(objectID))
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
@@ -64,7 +65,7 @@ func CreateObject(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	if err := models.CreateObject(&obj); err != nil {
+	if err := crud.CreateObject(&obj); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
@@ -90,7 +91,7 @@ func UpdateObject(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	updatedObject, err := models.UpdateObject(uint(objectID), &obj)
+	updatedObject, err := crud.UpdateObject(uint(objectID), &obj)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
@@ -109,7 +110,7 @@ func DeleteObject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := models.DeleteObject(uint(objectID)); err != nil {
+	if err := crud.DeleteObject(uint(objectID)); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
