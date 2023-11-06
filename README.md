@@ -6,7 +6,6 @@ This project convert CSV to JSON format.
 - ## Create connection with database
 This project make connection to database.
 
-
 - ## Basic Authenthication
 This project provide a user name and password when making a request.
 

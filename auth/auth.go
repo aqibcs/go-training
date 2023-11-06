@@ -47,49 +47,8 @@ func ValidateJWT(next http.Handler) http.Handler {
 				next.ServeHTTP(w, r)
 			}
 		} else {
-			// w.WriteHeader(http.StatusUnauthorized)
-			// w.Write([]byte("not authorized"))
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("not authorized"))
 		}
 	})
 }
-
-// func BasicAuth(next http.Handler) http.Handler {
-// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		if r.Method == http.MethodOptions {
-// 			next.ServeHTTP(w, r)
-// 			return
-// 		}
-
-// 		authHeader := r.Header.Get("Authorization")
-// 		if authHeader == "" {
-// 			Unauthorized(w)
-// 			return
-// 		}
-
-// 		auth := strings.SplitN(authHeader, " ", 2)
-// 		if len(auth) != 2 || auth[0] != "Basic" {
-// 			Unauthorized(w)
-// 			return
-// 		}
-
-// 		payload, err := base64.StdEncoding.DecodeString(auth[1])
-// 		if err != nil {
-// 			Unauthorized(w)
-// 			return
-// 		}
-
-// 		pair := strings.SplitN(string(payload), ":", 2)
-// 		if len(pair) != 2 || pair[0] != consts.USERNAME || pair[1] != consts.PASSWORD {
-// 			Unauthorized(w)
-// 			return
-// 		}
-
-// 		next.ServeHTTP(w, r)
-// 	})
-// }
-
-// func Unauthorized(w http.ResponseWriter) {
-// 	w.Header().Set("WWW-Authenticate", `Basic realm="Authorization Required"`)
-// 	w.WriteHeader(http.StatusUnauthorized)
-// 	w.Write([]byte("Unauthorized access"))
-// }

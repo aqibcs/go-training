@@ -37,8 +37,6 @@ func main() {
 		})
 	})
 
-	// Group routes under "/api" path
-
 	dbConn := db.GetDB()
 	dbConn.AutoMigrate(&models.Object{})
 
