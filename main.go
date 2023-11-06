@@ -1,12 +1,13 @@
 package main
 
 import (
+	"go-training/auth"
+	"go-training/db"
+	models "go-training/db/models/object"
+	"go-training/handlers"
 	"net/http"
 
 	"github.com/go-chi/chi"
-	"go-training/db"
-	"go-training/db/models/object"
-	"go-training/handlers"
 )
 
 func main() {
@@ -16,14 +17,27 @@ func main() {
 	// Create a new Chi router
 	r := chi.NewRouter()
 
-	// Routes and corresponding handlers
-	r.Get("/object", handlers.GetAllObjects)
-	r.Get("/object/{object_id}", handlers.GetObjectByID)
-	r.Post("/object", handlers.CreateObject)
-	r.Patch("/object/{object_id}", handlers.UpdateObject)
-	r.Delete("/object/{object_id}", handlers.DeleteObject)
-	r.Get("/upload", handlers.UploadFileHandler)
-	r.Post("/hello", handlers.HelloHandler)
+	// public routes
+	r.Group(func(r chi.Router) {
+		r.Get("/", handlers.GetJwt)
+	})
+
+	// protected routes
+	r.Group(func(r chi.Router) {
+		r.Use(auth.ValidateJWT)
+		r.Route("/api", func(r chi.Router) {
+			// Routes and corresponding handlers under the "/api" group
+			r.Get("/object", handlers.GetAllObjects)
+			r.Get("/object/{object_id}", handlers.GetObjectByID)
+			r.Post("/object", handlers.CreateObject)
+			r.Patch("/object/{object_id}", handlers.UpdateObject)
+			r.Delete("/object/{object_id}", handlers.DeleteObject)
+			r.Get("/upload", handlers.UploadFileHandler)
+			r.Post("/hello", handlers.HelloHandler)
+		})
+	})
+
+	// Group routes under "/api" path
 
 	dbConn := db.GetDB()
 	dbConn.AutoMigrate(&models.Object{})

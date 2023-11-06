@@ -2,13 +2,29 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
-	"github.com/go-chi/chi"
+	"go-training/auth"
+	"go-training/consts"
 	"go-training/db/models/crud"
 	"go-training/db/models/object"
+
+	"github.com/go-chi/chi"
 )
+
+func GetJwt(w http.ResponseWriter, r *http.Request) {
+	if r.Header["Access"] != nil {
+		if r.Header["Access"][0] == consts.API_KEY {
+			token, err := auth.CreateJWt()
+			if err != nil {
+				return
+			}
+			fmt.Fprint(w, token)
+		}
+	}
+}
 
 func GetAllObjects(w http.ResponseWriter, r *http.Request) {
 	objects, err := crud.GetAllObjects()
