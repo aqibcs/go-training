@@ -24,11 +24,11 @@ func main() {
 		r.Use(auth.ValidateJWT)
 		r.Route("/api", func(r chi.Router) {
 			// Routes and corresponding handlers under the "/api" group
-			r.Get("/object", handlers.GetAllObjects)
-			r.Get("/object/{object_id}", handlers.GetObjectByID)
-			r.Post("/object", handlers.CreateObject)
-			r.Patch("/object/{object_id}", handlers.UpdateObject)
-			r.Delete("/object/{object_id}", handlers.DeleteObject)
+			r.Get("/employee", handlers.GetAllEmployees)
+			r.Get("/employee/{employee_id}", handlers.GetEmployeeByID)
+			r.Post("/employee", handlers.CreateEmployee)
+			r.Patch("/employee/{employee_id}", handlers.UpdateEmployee)
+			r.Delete("/employee/{employee_id}", handlers.DeleteEmployee)
 			r.Get("/upload", handlers.UploadFileHandler)
 			r.Post("/hello", handlers.HelloHandler)
 		})
