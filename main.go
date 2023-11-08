@@ -3,17 +3,14 @@ package main
 import (
 	"go-training/auth"
 	"go-training/db"
-	models "go-training/db/models/object"
 	"go-training/handlers"
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"go-training/models/object"
 )
 
 func main() {
-	// Initialize the database connection
-	db.Init()
-
 	// Create a new Chi router
 	r := chi.NewRouter()
 
@@ -37,8 +34,8 @@ func main() {
 		})
 	})
 
-	dbConn := db.GetDB()
-	dbConn.AutoMigrate(&models.Object{})
+	dbConn := db.Conn()
+	dbConn.AutoMigrate(&models.Employee{})
 
 	// Start the HTTP server on port 8080
 	http.ListenAndServe(":8080", r)
