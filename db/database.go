@@ -1,47 +1,35 @@
 package db
 
 import (
-	"log"
-	"os"
-
-	"github.com/joho/godotenv"
+	"go-training/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"log"
 )
 
 var (
 	conn *gorm.DB
 )
 
-func GetDB() *gorm.DB {
+func Conn() *gorm.DB {
 	return conn
 }
 
-func Init() {
-	// Load environment variables from .env file
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
-	// Get environment variables for database connection
-	username := os.Getenv("POSTGRES_USER")
-	password := os.Getenv("POSTGRES_PASSWORD")
-	databaseName := os.Getenv("POSTGRES_DB")
-	host := os.Getenv("POSTGRES_HOST")
-	port := os.Getenv("POSTGRES_PORT")
+func init() {
+	// Load environment variables from .env file using the config package
+	config.LoadEnv()
 
 	// Construct the DSN (Data Source Name) for the PostgreSQL connection
-	dsn := "user=" + username + " password=" + password + " dbname=" + databaseName + " host=" + host + " port=" + port
+	dsn := "user=" + config.Username + " password=" + config.Password + " dbname=" + config.DatabaseName + " host=" + config.Host + " port=" + config.Port
 
-	var errDB error
-	conn, errDB = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if errDB != nil {
+	var err error
+	conn, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
 		log.Fatal("Failed to connect to the database")
 	}
 }
 
-func PingDB() error {
+func Ping() error {
 	postgresDB, err := conn.DB()
 	if err != nil {
 		return err

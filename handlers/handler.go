@@ -5,10 +5,23 @@ import (
 	"net/http"
 	"strconv"
 
+	"go-training/crud"
+	models "go-training/models/object"
+
 	"github.com/go-chi/chi"
-	"go-training/db/models/crud"
-	"go-training/db/models/object"
 )
+
+func sendResponse(w http.ResponseWriter, status int, data interface{}) {
+	response, err := json.Marshal(data)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	w.Write(response)
+}
 
 func GetAllObjects(w http.ResponseWriter, r *http.Request) {
 	objects, err := crud.GetAllObjects()
@@ -17,17 +30,7 @@ func GetAllObjects(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Serialize objects to JSON
-	jsonResponse, err := json.Marshal(objects)
-	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	// Write JSON response
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(jsonResponse)
+	sendResponse(w, http.StatusOK, objects)
 }
 
 func GetObjectByID(w http.ResponseWriter, r *http.Request) {
@@ -43,21 +46,11 @@ func GetObjectByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Serialize object to JSON
-	jsonResponse, err := json.Marshal(obj)
-	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	// Write JSON response
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(jsonResponse)
+	sendResponse(w, http.StatusOK, obj)
 }
 
 func CreateObject(w http.ResponseWriter, r *http.Request) {
-	var obj models.Object
+	var obj models.Employee
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&obj); err != nil {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
@@ -70,10 +63,7 @@ func CreateObject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Return response indicating success
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(obj)
+	sendResponse(w, http.StatusOK, obj)
 }
 
 func UpdateObject(w http.ResponseWriter, r *http.Request) {
@@ -83,7 +73,7 @@ func UpdateObject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var obj models.Object
+	var obj models.Employee
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&obj); err != nil {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
@@ -97,10 +87,7 @@ func UpdateObject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Return updated object as response
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(updatedObject)
+	sendResponse(w, http.StatusOK, updatedObject)
 }
 
 func DeleteObject(w http.ResponseWriter, r *http.Request) {
@@ -115,8 +102,5 @@ func DeleteObject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Return response indicating success
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(`{"message": "Object deleted successfully"}`))
+	sendResponse(w, http.StatusOK, "Delete object successfully")
 }
