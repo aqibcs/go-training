@@ -26,4 +26,9 @@ func LoadEnv() {
 	DatabaseName = os.Getenv("POSTGRES_DB")
 	Host = os.Getenv("POSTGRES_HOST")
 	Port = os.Getenv("POSTGRES_PORT")
+
+	// Validate environment variables
+	if Username == "" || Password == "" || DatabaseName == "" || Host == "" || Port == "" {
+		log.Fatal("One or more required environment variables are missing.")
+	}
 }
