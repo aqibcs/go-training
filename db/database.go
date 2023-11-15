@@ -1,10 +1,12 @@
 package db
 
 import (
+	"fmt"
 	"go-training/config"
+	"log"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"log"
 )
 
 var (
@@ -16,16 +18,14 @@ func Conn() *gorm.DB {
 }
 
 func init() {
-	// Load environment variables from .env file using the config package
-	config.LoadEnv()
-
 	// Construct the DSN (Data Source Name) for the PostgreSQL connection
-	dsn := "user=" + config.Username + " password=" + config.Password + " dbname=" + config.DatabaseName + " host=" + config.Host + " port=" + config.Port
+	dsn := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s",
+		config.Host, config.Port, config.Username, config.DatabaseName, config.Password)
 
 	var err error
 	conn, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatal("Failed to connect to the database")
+		log.Fatalf("Failed to connect to the database: %v", err)
 	}
 }
 
