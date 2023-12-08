@@ -1,14 +1,29 @@
-# CSV to JSON Converter
+# Includes
 
-This Go program converts data from a CSV (Comma-Separated Values) file to JSON format.
+- ## CSV to JSON converter
+This project convert CSV to JSON format.
+
+- ## Create connection with database
+This project make connection to database.
+
+- ## Basic Authenthication
+This project provide a user name and password when making a request.
 
 ## Prerequisite
 
 - Golang
+- Docker
 
+## Docker-compose
+
+To create connection with database use the following command:
+
+```bash
+docker-compose up -d
+```
 ## Build
 
-To build this project
+To build this project using the following command;
 
 ```bash
 ./scripts/build.sh
@@ -16,7 +31,7 @@ To build this project
 
 ## Run
 
-You can run the project using the following command:
+run the project using the following command:
 
 ```bash
 ./scripts/run.sh

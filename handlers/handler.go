@@ -2,15 +2,29 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
+	"go-training/auth"
+	"go-training/consts"
 	"go-training/crud"
 	models "go-training/models/object"
 
 	"github.com/go-chi/chi"
 )
 
+func GetJwt(w http.ResponseWriter, r *http.Request) {
+	if r.Header["Access"] != nil {
+		if r.Header["Access"][0] == consts.API_KEY {
+			token, err := auth.CreateJWt()
+			if err != nil {
+				return
+			}
+			fmt.Fprint(w, token)
+		}
+	}
+}
 func sendResponse(w http.ResponseWriter, status int, data interface{}) {
 	response, err := json.Marshal(data)
 	if err != nil {
@@ -23,24 +37,24 @@ func sendResponse(w http.ResponseWriter, status int, data interface{}) {
 	w.Write(response)
 }
 
-func GetAllObjects(w http.ResponseWriter, r *http.Request) {
-	objects, err := crud.GetAllObjects()
+func GetAllEmployees(w http.ResponseWriter, r *http.Request) {
+	employees, err := crud.GetAllEmployees()
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
-	sendResponse(w, http.StatusOK, objects)
+	sendResponse(w, http.StatusOK, employees)
 }
 
-func GetObjectByID(w http.ResponseWriter, r *http.Request) {
-	objectID, err := strconv.Atoi(chi.URLParam(r, "object_id"))
+func GetEmployeeByID(w http.ResponseWriter, r *http.Request) {
+	employeeID, err := strconv.Atoi(chi.URLParam(r, "object_id"))
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
-	obj, err := crud.GetObjectByID(uint(objectID))
+	obj, err := crud.GetEmployeeByID(uint(employeeID))
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
@@ -49,7 +63,7 @@ func GetObjectByID(w http.ResponseWriter, r *http.Request) {
 	sendResponse(w, http.StatusOK, obj)
 }
 
-func CreateObject(w http.ResponseWriter, r *http.Request) {
+func CreateEmployee(w http.ResponseWriter, r *http.Request) {
 	var obj models.Employee
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&obj); err != nil {
@@ -58,7 +72,7 @@ func CreateObject(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	if err := crud.CreateObject(&obj); err != nil {
+	if err := crud.CreateEmployee(&obj); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
@@ -66,8 +80,8 @@ func CreateObject(w http.ResponseWriter, r *http.Request) {
 	sendResponse(w, http.StatusOK, obj)
 }
 
-func UpdateObject(w http.ResponseWriter, r *http.Request) {
-	objectID, err := strconv.Atoi(chi.URLParam(r, "object_id"))
+func UpdateEmployee(w http.ResponseWriter, r *http.Request) {
+	employeeID, err := strconv.Atoi(chi.URLParam(r, "employee_id"))
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
@@ -81,26 +95,26 @@ func UpdateObject(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	updatedObject, err := crud.UpdateObject(uint(objectID), &obj)
+	updatedEmployee, err := crud.UpdateEmployee(uint(employeeID), &obj)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
-	sendResponse(w, http.StatusOK, updatedObject)
+	sendResponse(w, http.StatusOK, updatedEmployee)
 }
 
-func DeleteObject(w http.ResponseWriter, r *http.Request) {
-	objectID, err := strconv.Atoi(chi.URLParam(r, "object_id"))
+func DeleteEmployee(w http.ResponseWriter, r *http.Request) {
+	employeeID, err := strconv.Atoi(chi.URLParam(r, "employee_id"))
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
-	if err := crud.DeleteObject(uint(objectID)); err != nil {
+	if err := crud.DeleteEmployee(uint(employeeID)); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
-	sendResponse(w, http.StatusOK, "Delete object successfully")
+	sendResponse(w, http.StatusOK, "Delete Employee successfully")
 }
