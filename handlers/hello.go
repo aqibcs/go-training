@@ -1,33 +1,25 @@
 package handlers
 
 import (
-	"encoding/json"
+	"github.com/labstack/echo/v4"
 	"go-training/models/request"
 	"go-training/models/response"
 	"net/http"
 	"time"
 )
 
-func HelloHandler(w http.ResponseWriter, r *http.Request) {
+func HelloHandler(c echo.Context) error {
 	var requestBody request.RequestBody
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&requestBody)
+	err := c.Bind(&requestBody)
 	if err != nil {
-		http.Error(w, "Inavlid requestbody", http.StatusBadRequest)
+		return c.String(http.StatusBadRequest, "Invalid request body")
 	}
 
-	response := response.ResponseBody{
+	responseBody := response.ResponseBody{
 		Code:      200,
 		Message:   "Welcome " + requestBody.Name + "!",
 		Timestamp: time.Now().UTC().Format(time.RFC3339),
 	}
 
-	jsonResponce, err := json.Marshal(response)
-	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonResponce)
+	return c.JSON(http.StatusOK, responseBody)
 }
