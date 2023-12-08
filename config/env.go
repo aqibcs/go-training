@@ -1,22 +1,21 @@
 package config
 
 import (
+	"github.com/joho/godotenv"
 	"log"
 	"os"
-
-	"github.com/joho/godotenv"
 )
 
 var (
-	Username     = "myuser"
-	Password     = ""
-	DatabaseName = "mydatabase"
-	Host         = "localhost"
-	Port         = "5432"
+	Username     string
+	Password     string
+	DatabaseName string
+	Host         string
+	Port         string
 )
 
-func init() {
-	err := godotenv.Load(".env")
+func LoadEnv() {
+	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}
@@ -29,15 +28,10 @@ func init() {
 		Password = x
 	}
 
-	if x := os.Getenv("POSTGRES_DB"); x != "" {
-		DatabaseName = x
-	}
-
-	if x := os.Getenv("POSTGRES_HOST"); x != "" {
-		Host = x
-	}
-
-	if x := os.Getenv("POSTGRES_PORT"); x != "" {
-		Port = x
-	}
+	// Get environment variables for database connection
+	Username = os.Getenv("POSTGRES_USER")
+	Password = os.Getenv("POSTGRES_PASSWORD")
+	DatabaseName = os.Getenv("POSTGRES_DB")
+	Host = os.Getenv("POSTGRES_HOST")
+	Port = os.Getenv("POSTGRES_PORT")
 }
