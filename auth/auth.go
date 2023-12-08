@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/labstack/echo/v4"
 )
 
 func CreateJWt() (string, error) {
@@ -26,29 +27,30 @@ func CreateJWt() (string, error) {
 	return tokenStr, nil
 }
 
-func ValidateJWT(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Header["Token"] != nil {
-			token, err := jwt.Parse(r.Header["Token"][0], func(t *jwt.Token) (interface{}, error) {
-				_, ok := t.Method.(*jwt.SigningMethodHMAC)
-				if !ok {
-					w.WriteHeader(http.StatusUnauthorized)
-					w.Write([]byte("not authorized"))
-				}
-				return consts.SECRET, nil
-			})
+func ValidateJWT(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		tokenHeader := c.Request().Header.Get("Token")
 
-			if err != nil {
-				w.WriteHeader(http.StatusUnauthorized)
-				w.Write([]byte("not authorized: " + err.Error()))
-			}
-
-			if token.Valid {
-				next.ServeHTTP(w, r)
-			}
-		} else {
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte("not authorized"))
+		if tokenHeader == "" {
+			return c.String(http.StatusUnauthorized, "not authorized")
 		}
-	})
+
+		token, err := jwt.Parse(tokenHeader, func(t *jwt.Token) (interface{}, error) {
+			_, ok := t.Method.(*jwt.SigningMethodHMAC)
+			if !ok {
+				return nil, fmt.Errorf("not authorized")
+			}
+			return consts.SECRET, nil
+		})
+
+		if err != nil {
+			return c.String(http.StatusUnauthorized, "not authorized: "+err.Error())
+		}
+
+		if token.Valid {
+			return next(c)
+		}
+
+		return c.String(http.StatusUnauthorized, "not authorized")
+	}
 }
