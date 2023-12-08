@@ -14,7 +14,7 @@ while getopts "b" opt; do
 done
 
 if [ "$Build" = true ]; then
-   ./scripts/build.sh
+  ./scripts/build.sh
 fi
 
 $BINARY $CSV_FILE

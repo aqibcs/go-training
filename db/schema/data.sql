@@ -1,13 +1,13 @@
-BEGIN;
+INSERT INTO branch(BranchID, BranchName, Capacity)
+VALUES
+(100, 'EE', 200),
+(101, 'IT', 200),
+(102, 'SSE', 150),
+(103, 'CSE', 150);
 
-INSERT INTO users (name, email)
-VALUES ('Aqib', 'aqib@gmail.com'),
-       ('Asad', 'asad@gmail.com'),
-       ('Nauman', 'nauman@gmail.com');
-
-INSERT INTO posts (user_id, content)
-VALUES (1, 'Post by Aqib'),
-       (2, 'Post by Asad'),
-       (3, 'Post by Nauman');
-
-COMMIT;
+INSERT INTO students(StudentID, FirstName, LastName, BranchID, Email)
+VALUES
+(1, 'Ron', 'Weasley', 101, 'ron@gmail.com'),
+(2, 'Ahsen', 'Khan', 102, 'ahsen@gmail.com'),
+(3, 'Asad', 'Ali', 103, 'asad@gmail.com'),
+(4, 'Qasim', 'Shah', 101, 'qasim@gmail.com');
