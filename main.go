@@ -1,24 +1,35 @@
 package main
 
 import (
-	"net/http"
-
-	"github.com/go-chi/chi"
+	"github.com/labstack/echo/v4"
+	"go-training/auth"
 	"go-training/db"
 	"go-training/handlers"
+	models "go-training/models/object"
 )
 
 func main() {
-	// Initialize the database connection
-	db.Init()
+	// Create a new Echo instance
+	e := echo.New()
 
-	// Create a new Chi router
-	r := chi.NewRouter()
+	// public routes
+	e.GET("/", handlers.GetJwt)
 
-	// Routes and corresponding handlers
-	r.Get("/upload", handlers.UploadFileHandler)
-	r.Post("/hello", handlers.HelloHandler)
+	// protected routes
+	apiGroup := e.Group("/api")
+	apiGroup.Use(auth.ValidateJWT)
+	apiGroup.GET("/employee", handlers.GetAllEmployees)
+	apiGroup.GET("/employee/:employee_id", handlers.GetEmployeeByID)
+	apiGroup.POST("/employee", handlers.CreateEmployee)
+	apiGroup.PATCH("/employee/:employee_id", handlers.UpdateEmployee)
+	apiGroup.DELETE("/employee/:employee_id", handlers.DeleteEmployee)
+	apiGroup.GET("/upload", handlers.UploadFileHandler)
+	apiGroup.POST("/hello", handlers.HelloHandler)
 
-	// Start the HTTP server on port 8080
-	http.ListenAndServe(":8080", r)
+	// Auto migrate database
+	dbConn := db.Conn()
+	dbConn.AutoMigrate(&models.Employee{})
+
+	// Start the Echo server on port 8080
+	e.Start(":8080")
 }
