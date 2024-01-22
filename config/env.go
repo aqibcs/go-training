@@ -1,29 +1,45 @@
 package config
 
 import (
-	"github.com/joho/godotenv"
 	"log"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
+// PostgreSQL connection parameters
 var (
-	Username     string
-	Password     string
-	DatabaseName string
-	Host         string
-	Port         string
+	Username     = "myuser"
+	Password     = ""
+	DatabaseName = "mydatabase"
+	Host         = "localhost"
+	Port         = "5432"
 )
 
-func LoadEnv() {
-	err := godotenv.Load()
+// init loads environment variables from a .env file and overrides default values.
+func init() {
+	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatalf("Error loading .env file")
+		log.Printf("Error loading .env file: %v", err)
 	}
 
-	// Get environment variables for database connection
-	Username = os.Getenv("POSTGRES_USER")
-	Password = os.Getenv("POSTGRES_PASSWORD")
-	DatabaseName = os.Getenv("POSTGRES_DB")
-	Host = os.Getenv("POSTGRES_HOST")
-	Port = os.Getenv("POSTGRES_PORT")
+	if x := os.Getenv("POSTGRES_USER"); x != "" {
+		Username = x
+	}
+
+	if x := os.Getenv("POSTGRES_PASSWORD"); x != "" {
+		Password = x
+	}
+
+	if x := os.Getenv("POSTGRES_DB"); x != "" {
+		DatabaseName = x
+	}
+
+	if x := os.Getenv("POSTGRES_HOST"); x != "" {
+		Host = x
+	}
+
+	if x := os.Getenv("POSTGRES_PORT"); x != "" {
+		Port = x
+	}
 }

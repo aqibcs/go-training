@@ -13,8 +13,8 @@ while getopts "b" opt; do
   esac
 done
 
-if [ "$Build" = true ]; then
-  ./scripts/build.sh
-fi
+# Execute the build script if -b flag is provided
+[ "$Build" = true ] && ./scripts/build.sh
 
-$BINARY $CSV_FILE
+# Run the binary with the specified CSV file
+"$BINARY" "$CSV_FILE"

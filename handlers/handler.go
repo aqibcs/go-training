@@ -1,120 +1,104 @@
 package handlers
 
 import (
-	"encoding/json"
-	"fmt"
-	"net/http"
-	"strconv"
-
 	"go-training/auth"
 	"go-training/consts"
 	"go-training/crud"
-	models "go-training/models/object"
+	"go-training/models/object"
+	"net/http"
+	"strconv"
 
-	"github.com/go-chi/chi"
+	"github.com/labstack/echo/v4"
 )
 
-func GetJwt(w http.ResponseWriter, r *http.Request) {
-	if r.Header["Access"] != nil {
-		if r.Header["Access"][0] == consts.API_KEY {
-			token, err := auth.CreateJWt()
-			if err != nil {
-				return
-			}
-			fmt.Fprint(w, token)
+// GetJwt handles the HTTP GET request for retrieving a JWT.
+func GetJwt(c echo.Context) error {
+	apiKey := c.Request().Header.Get("Access")
+	if apiKey != "" && apiKey == consts.APIKey {
+		token, err := auth.CreateJWT()
+		if err != nil {
+			return c.String(http.StatusInternalServerError, "Internal Server Error")
 		}
-	}
-}
-func sendResponse(w http.ResponseWriter, status int, data interface{}) {
-	response, err := json.Marshal(data)
-	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
+		return c.String(http.StatusOK, token)
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	w.Write(response)
+	return c.String(http.StatusUnauthorized, "Unauthorized")
 }
 
-func GetAllEmployees(w http.ResponseWriter, r *http.Request) {
+// sendResponse sends an HTTP response with the specified status code and data in JSON format.
+func sendResponse(c echo.Context, status int, data interface{}) error {
+	return c.JSON(status, data)
+}
+
+// GetAllEmployees handles the HTTP GET request for retrieving all employees.
+func GetAllEmployees(c echo.Context) error {
 	employees, err := crud.GetAllEmployees()
 	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 
-	sendResponse(w, http.StatusOK, employees)
+	return sendResponse(c, http.StatusOK, employees)
 }
 
-func GetEmployeeByID(w http.ResponseWriter, r *http.Request) {
-	employeeID, err := strconv.Atoi(chi.URLParam(r, "object_id"))
+// GetEmployeeByID handles the HTTP GET request for retrieving a specific employee by ID.
+func GetEmployeeByID(c echo.Context) error {
+	employeeID, err := strconv.Atoi(c.Param("employee_id"))
 	if err != nil {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return
+		return c.String(http.StatusBadRequest, "Bad Request")
 	}
 
-	obj, err := crud.GetEmployeeByID(uint(employeeID))
+	employee, err := crud.GetEmployeeByID(uint(employeeID))
 	if err != nil {
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
+		return c.String(http.StatusNotFound, "Not Found")
 	}
 
-	sendResponse(w, http.StatusOK, obj)
+	return sendResponse(c, http.StatusOK, employee)
 }
 
-func CreateEmployee(w http.ResponseWriter, r *http.Request) {
-	var obj models.Employee
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&obj); err != nil {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return
-	}
-	defer r.Body.Close()
-
-	if err := crud.CreateEmployee(&obj); err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
+// CreateEmployee handles the HTTP POST request for creating a new employee.
+func CreateEmployee(c echo.Context) error {
+	var employee models.Employee
+	if err := c.Bind(&employee); err != nil {
+		return c.String(http.StatusBadRequest, "Bad Request")
 	}
 
-	sendResponse(w, http.StatusOK, obj)
+	if err := crud.CreateEmployee(&employee); err != nil {
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
+	}
+
+	return sendResponse(c, http.StatusCreated, employee)
 }
 
-func UpdateEmployee(w http.ResponseWriter, r *http.Request) {
-	employeeID, err := strconv.Atoi(chi.URLParam(r, "employee_id"))
+// UpdateEmployee handles the HTTP PATCH request for updating an existing employee.
+func UpdateEmployee(c echo.Context) error {
+	employeeID, err := strconv.Atoi(c.Param("employee_id"))
 	if err != nil {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return
+		return c.String(http.StatusBadRequest, "Bad Request")
 	}
 
-	var obj models.Employee
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&obj); err != nil {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return
+	var employee models.Employee
+	if err := c.Bind(&employee); err != nil {
+		return c.String(http.StatusBadRequest, "Bad Request")
 	}
-	defer r.Body.Close()
 
-	updatedEmployee, err := crud.UpdateEmployee(uint(employeeID), &obj)
+	updatedEmployee, err := crud.UpdateEmployee(uint(employeeID), &employee)
 	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 
-	sendResponse(w, http.StatusOK, updatedEmployee)
+	return sendResponse(c, http.StatusOK, updatedEmployee)
 }
 
-func DeleteEmployee(w http.ResponseWriter, r *http.Request) {
-	employeeID, err := strconv.Atoi(chi.URLParam(r, "employee_id"))
+// DeleteEmployee handles the HTTP DELETE request for deleting an employee by its ID.
+func DeleteEmployee(c echo.Context) error {
+	employeeID, err := strconv.Atoi(c.Param("employee_id"))
 	if err != nil {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return
+		return c.String(http.StatusBadRequest, "Bad Request")
 	}
 
 	if err := crud.DeleteEmployee(uint(employeeID)); err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 
-	sendResponse(w, http.StatusOK, "Delete Employee successfully")
+	return c.NoContent(http.StatusNoContent)
 }
