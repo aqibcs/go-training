@@ -8,11 +8,11 @@ import (
 	"time"
 )
 
+// HelloHandler handles HTTP requests for a simple hello message.
 func HelloHandler(c echo.Context) error {
 	var requestBody request.RequestBody
-	err := c.Bind(&requestBody)
-	if err != nil {
-		return c.String(http.StatusBadRequest, "Invalid request body")
+	if err := c.Bind(&requestBody); err != nil {
+		return c.JSON(http.StatusBadRequest, "Invalid request body")
 	}
 
 	responseBody := response.ResponseBody{

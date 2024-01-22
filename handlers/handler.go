@@ -11,12 +11,13 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// GetJwt handles the HTTP GET request for retrieving a JWT.
 func GetJwt(c echo.Context) error {
 	apiKey := c.Request().Header.Get("Access")
-	if apiKey != "" && apiKey == consts.API_KEY {
-		token, err := auth.CreateJWt()
+	if apiKey != "" && apiKey == consts.APIKey {
+		token, err := auth.CreateJWT()
 		if err != nil {
-			return err
+			return c.String(http.StatusInternalServerError, "Internal Server Error")
 		}
 		return c.String(http.StatusOK, token)
 	}
@@ -24,74 +25,80 @@ func GetJwt(c echo.Context) error {
 	return c.String(http.StatusUnauthorized, "Unauthorized")
 }
 
-// GetAllEmployees returns all employees.
+// sendResponse sends an HTTP response with the specified status code and data in JSON format.
+func sendResponse(c echo.Context, status int, data interface{}) error {
+	return c.JSON(status, data)
+}
+
+// GetAllEmployees handles the HTTP GET request for retrieving all employees.
 func GetAllEmployees(c echo.Context) error {
 	employees, err := crud.GetAllEmployees()
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
-	return c.JSON(http.StatusOK, employees)
+
+	return sendResponse(c, http.StatusOK, employees)
 }
 
-// GetEmployeeByID returns an employee by ID.
+// GetEmployeeByID handles the HTTP GET request for retrieving a specific employee by ID.
 func GetEmployeeByID(c echo.Context) error {
 	employeeID, err := strconv.Atoi(c.Param("employee_id"))
 	if err != nil {
-		return c.String(http.StatusBadRequest, "Invalid employee ID")
+		return c.String(http.StatusBadRequest, "Bad Request")
 	}
 
 	employee, err := crud.GetEmployeeByID(uint(employeeID))
 	if err != nil {
-		return c.String(http.StatusNotFound, "Employee not found")
+		return c.String(http.StatusNotFound, "Not Found")
 	}
 
-	return c.JSON(http.StatusOK, employee)
+	return sendResponse(c, http.StatusOK, employee)
 }
 
-// CreateEmployee adds a new employee.
+// CreateEmployee handles the HTTP POST request for creating a new employee.
 func CreateEmployee(c echo.Context) error {
-	var newEmployee models.Employee
-	if err := c.Bind(&newEmployee); err != nil {
-		return c.String(http.StatusBadRequest, "Invalid request")
+	var employee models.Employee
+	if err := c.Bind(&employee); err != nil {
+		return c.String(http.StatusBadRequest, "Bad Request")
 	}
 
-	if err := crud.CreateEmployee(&newEmployee); err != nil {
+	if err := crud.CreateEmployee(&employee); err != nil {
 		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 
-	return c.JSON(http.StatusCreated, newEmployee)
+	return sendResponse(c, http.StatusCreated, employee)
 }
 
-// UpdateEmployee updates an employee by ID.
+// UpdateEmployee handles the HTTP PATCH request for updating an existing employee.
 func UpdateEmployee(c echo.Context) error {
-	employeeId, err := strconv.Atoi(c.Param("employee_id"))
+	employeeID, err := strconv.Atoi(c.Param("employee_id"))
 	if err != nil {
-		return c.String(http.StatusBadRequest, "Invalid employee ID")
+		return c.String(http.StatusBadRequest, "Bad Request")
 	}
 
-	var updatedEmployee models.Employee
-	if err := c.Bind(&updatedEmployee); err != nil {
-		return c.String(http.StatusBadRequest, "Invalid request")
+	var employee models.Employee
+	if err := c.Bind(&employee); err != nil {
+		return c.String(http.StatusBadRequest, "Bad Request")
 	}
 
-	employee, err := crud.UpdateEmployee(uint(employeeId), &updatedEmployee)
+	updatedEmployee, err := crud.UpdateEmployee(uint(employeeID), &employee)
 	if err != nil {
-		return c.String(http.StatusNotFound, "Employee not found")
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 
-	return c.JSON(http.StatusOK, employee)
+	return sendResponse(c, http.StatusOK, updatedEmployee)
 }
 
-// DeleteEmployee deletes an employee by ID.
+// DeleteEmployee handles the HTTP DELETE request for deleting an employee by its ID.
 func DeleteEmployee(c echo.Context) error {
 	employeeID, err := strconv.Atoi(c.Param("employee_id"))
 	if err != nil {
-		return c.String(http.StatusBadRequest, "Invalid employee ID")
+		return c.String(http.StatusBadRequest, "Bad Request")
 	}
 
 	if err := crud.DeleteEmployee(uint(employeeID)); err != nil {
-		return c.String(http.StatusNotFound, "Employee not found")
+		return c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 
-	return echo.NewHTTPError(http.StatusOK, "Employee delete successfully")
+	return c.NoContent(http.StatusNoContent)
 }

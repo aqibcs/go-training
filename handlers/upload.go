@@ -3,11 +3,13 @@ package handlers
 import (
 	"encoding/csv"
 	"encoding/json"
-	"github.com/labstack/echo/v4"
 	"io"
 	"net/http"
+
+	"github.com/labstack/echo/v4"
 )
 
+// UploadFileHandler handles HTTP requests for uploading a CSV file, parsing its content, and converting it to JSON.
 func UploadFileHandler(c echo.Context) error {
 	file, err := c.FormFile("file") // "file" is the key for the uploaded file
 	if err != nil {
@@ -51,5 +53,9 @@ func UploadFileHandler(c echo.Context) error {
 	}
 
 	// Set Content-Type header to indicate JSON response
-	return c.JSON(http.StatusOK, responseJSON)
+	c.Response().Header().Set("Content-Type", "application/json")
+	c.Response().WriteHeader(http.StatusOK)
+	c.Response().Write(responseJSON)
+
+	return nil
 }
